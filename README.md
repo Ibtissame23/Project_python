@@ -2,13 +2,15 @@
 
 Ce repository contient le code et les notebooks associés au **backtest d’une stratégie core–satellite** sur le S&P 500, où l’**allocation est pilotée par des régimes de marché** détectés via un **Hidden Markov Model (HMM)**.
 
+**Groupe :** Ibtissame EL HMIDI | Grainne KEANE | Jiayi SONG | Manisha QUENUM  
+**Date :** 8 janvier 2026
+
 - **Core** : exposition structurelle à l’ETF SPY  
 - **Satellite / overlay** : sur-/sous-pondération d’un panier d’actions US en fonction du régime (Bull / Bear / Neutre)  
 
 ---
 
 ## 1. Organisation du projet
-
 
 ### `01_HMM_101.ipynb` – Introduction pratique au HMM
 
@@ -41,30 +43,25 @@ Notebook “appliqué marché” qui contient :
 
 3. **Scoring des actions (overlay)**
    On attribue à chaque action un **poids “cyclique”** en fonction de sa performance relative dans les régimes :
-   - **Méthode 1 – Moyennes empiriques**  
-     \( \mu_i^{bull}, \mu_i^{bear} \) et score \( = \max(\mu_i^{bull} - \mu_i^{bear}, 0) \)
-   - **Méthode 2 – Espérance corrigée des probabilités de régimes**  
-     utilisation des probabilités de régimes au lieu d’un simple comptage.
-   - **Méthode 3 – Espérance ajustée au risque**  
-     même approche que 2 mais divisée par la volatilité (Sharpe “bull vs bear” simplifié).
+   - **Méthode 1 – Moyennes empiriques** $\mu_i^{bull}, \mu_i^{bear}$ et $score = \max(\mu_i^{bull} - \mu_i^{bear}, 0)$
+   - **Méthode 2 – Espérance corrigée des probabilités de régimes** utilisation des probabilités de régimes au lieu d’un simple comptage.
+   - **Méthode 3 – Espérance ajustée au risque** même approche que 2 mais divisée par la volatilité (Sharpe “bull vs bear” simplifié).
 
    Les scores sont ensuite **normalisés** pour obtenir un vecteur de poids relatifs sur le satellite :
-   \[
-   w_i^{rel} = \frac{\text{score}_i}{\sum_j \text{score}_j}
-   \]
+   $$w_i^{rel} = \frac{\text{score}_i}{\sum_j \text{score}_j}$$
 
 4. **Stratégie core–satellite**
    - Core : **100 % SPY** en permanence.
    - Satellite :
-     - en **Bull** : overlay long \( +\alpha \) sur les actions cycliques (par ex. +30 % du portefeuille),
-     - en **Bear** : overlay short \( -\beta \) (ex : -20 %) pour être underweight vs SPY,
+     - en **Bull** : overlay long $+\alpha$ sur les actions cycliques (par ex. +30 % du portefeuille),
+     - en **Bear** : overlay short $-\beta$ (ex : -20 %) pour être underweight vs SPY,
      - en **Neutre** : overlay réduit ou nul.
    - Exposition totale potentielle : entre ~70 % et 130 % du portefeuille (levier / désengagement).
 
    Le poids de chaque action dans le satellite est proportionnel à son **score de régime**.
 
 5. **Backtests**
-   - **Expanding window** : on ré-estime le HMM sur tout l’historique disponible jusqu’à \(t-1\), puis on teste à \(t\).
+   - **Expanding window** : on ré-estime le HMM sur tout l’historique disponible jusqu’à $t-1$, puis on teste à $t$.
    - **Rolling 3 ans / 3 ans** :  
      - fenêtre d’entraînement fixe (ex. 3 ans),  
      - fenêtre de test suivante (3 ans),  
@@ -88,9 +85,5 @@ Notebook “appliqué marché” qui contient :
    - courbe d’equity (stratégie vs Buy & Hold),
    - drawdown,
    - volatilité / Sharpe mobiles,
-   - exposition moyenne \(|signal|\),
+   - exposition moyenne $|signal|$,
    - régimes HMM sur l’axe du temps.
-
----
-
-
